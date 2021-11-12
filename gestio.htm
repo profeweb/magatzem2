@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Gestió Magatzem</title>
+	<meta charset="UTF-8">
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script src="Paquet.js"></script>
+	<script src="Estant.js"></script>
+	<script src="Magatzem.js"></script>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"/>
+</head>
+<body>
+	<div class="container">
+	<div id="content"></div>
+	<div>
+		<div class="form-group row">
+    		<label for="posicio" class="col-sm-2 col-form-label">Posició: </label>
+    		<div class="col-sm-6">
+				<select id="posicio" class="form-control">
+				</select>
+			</div>
+		</div>
+		<div class="form-group row">
+    		<label for="codi" class="col-sm-2 col-form-label">Codi Paquet: </label>
+    		<div class="col-sm-6"><input type="text" id="codi"  class="form-control" />
+    		</div>
+    	</div>
+    	<div class="form-group row">
+    		<label for="posicio" class="col-sm-2 col-form-label">Destinatari: </label>
+    		<div class="col-sm-6">
+				<input type="text" id="destinatari"  class="form-control" />
+			</div>
+		</div>
+		<div class="form-group row">
+    		<label for="pes" class="col-sm-2 col-form-label">Pes (Kg): </label>
+    		<div class="col-sm-6">
+				<input type="text" id="pes"  class="form-control" />
+			</div>
+		</div>
+		<button class="btn btn-primary" id="b1" onclick="entrada();">ENTRADA</button>
+		<button class="btn btn-danger" id="b2" onclick="sortida();">SORTIDA</button>
+		<button class="btn btn-secondary" id="b3" onclick="quants();">NUM.LLIURES</button>
+		<button class="btn btn-secondary" id="b4" onclick="calcula();">CALCULAR PVP</button>
+		<button class="btn btn-secondary" id="b5" onclick="ordena();">ORDENA x PES</button>
+		<button class="btn btn-secondary" id="b6" onclick="mesVell();">MÉS VELL</button>
+	</div>
+	<br/>
+	<div id="log" class="alert alert-primary"></div>
+	</div>
+	<script>
+
+		var m = new Magatzem(10);
+		m.inicialitza();
+		m.mostraTaula();
+
+		optionsPosicio();
+
+		function optionsPosicio(){
+			for(var i=0; i<m.estants.length; i++){
+				var option = $("<option></option>").val(i).text(i);
+				$("#posicio").append(option);
+			}
+		}
+
+		function quants(){
+			
+			var lliures = m.getNumLliures();
+			var ocupats = m.getNumOcupats();
+
+			var info =$("<p></p>").text(" Estants Lliures: " + lliures + ", Ocupats: "+ocupats+")");
+			$("#log").html(info);
+
+			alert("NUM. ESTANTS LLIURES: " + lliures +" \n"+
+				  "NUM. ESTANTS OCUPATS: " + ocupats);
+		}
+
+		function entrada(){
+
+			$("#log").html("");
+
+			var pos = $("#posicio").val();
+			var codi = $("#codi").val();
+			var desti = $("#destinatari").val();
+			var pes = $("#pes").val();
+
+			var p = new Paquet(codi, desti, pes);
+			m.afegirPaquet(p, pos);
+
+		}
+
+		function sortida(){
+			$("#log").html("");
+			var pos = $("#posicio").val();
+			var p = m.recollirPaquet(pos);
+		}
+
+		function calcula(){
+			$("#log").html("");
+			m.calculaPreus();
+		}
+
+		function ordena(){
+			$("#log").html("");
+			m.ordenaPes();
+			m.mostraTaula();
+		}
+
+		function mesVell(){
+			$("#log").html("");
+			var p = m.paquetMesVell();
+			if(p!=null){
+				$("#log").append(p.getInfo());
+			}
+		}
+
+	</script>
+</body>
+</html> 
